@@ -20,7 +20,7 @@ export const createFuzzySearch = <Item>({
     ignoreFieldNorm: true,
     useTokenSearch: true,
     tokenMatch: 'all',
-    threshold: 0.4,
+    threshold: 0.7,
     includeScore: true,
   });
 
@@ -35,9 +35,7 @@ export const createFuzzySearch = <Item>({
       ? fuse.search(fuzzyTokens.join(' '))
       : documents.map((item) => ({ item, score: 0 }));
     const matches = candidates
-      .filter(({ item }) =>
-        strictTokens.every((token) => item.terms.some((term) => term.includes(token)))
-      )
+      .filter(({ item }) => strictTokens.every((token) => item.terms.some((term) => term.includes(token))))
       .map(({ item, score }) => ({
         ...item,
         score: score ?? 0,
