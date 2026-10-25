@@ -1,0 +1,43 @@
+name: Release APK
+
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    name: Build Android APK
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+      - uses: expo/expo-github-action@v8
+        with:
+          eas-version: latest
+          token: ${{ secrets.EXPO_TOKEN }}
+      - run: bun install --frozen-lockfile
+      - name: Build on EAS
+        run: eas build --platform android --profile preview --non-interactive --json > eas-build.json
+      - name: Download APK
+        run: eas build:download --build-id "$(jq -r '.[0].id' eas-build.json)"
+      - name: Collect APK
+        run: echo "APK_PATH=$(find "$GITHUB_WORKSPACE" -maxdepth 4 -name '*.apk' -print -quit)" >> "$GITHUB_ENV"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: fenne-apk
+          path: ${{ env.APK_PATH }}
+      - name: Publish GitHub Release
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: ${{ env.APK_PATH }}
+          generate_release_notes: true

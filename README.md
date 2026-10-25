@@ -25,6 +25,10 @@ bun run test --watchAll=false --runInBand
 
 Tests use the existing Jest/Expo configuration. For a focused run, append the test file path to the last command. Runtime mobile verification uses Argent against the already-running app; see [AGENTS.md](AGENTS.md).
 
+## CI/CD
+
+[.github/workflows/ci.yml](.github/workflows/ci.yml) runs the checks above on every push to `main` and every pull request. [.github/workflows/release.yml](.github/workflows/release.yml) builds an Android APK on EAS and attaches it to a GitHub Release when a `v*` tag is pushed; a manual run only uploads the APK as a workflow artifact. The release job needs an `EXPO_TOKEN` repository secret (expo.dev → Access Tokens) for an Expo account that can build this project.
+
 ## Where behavior lives
 
 - `app/`: Expo routes; authenticated tabs are under `app/(app)/(tabs)/`.
