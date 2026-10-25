@@ -27,7 +27,9 @@ Tests use the existing Jest/Expo configuration. For a focused run, append the te
 
 ## CI/CD
 
-[.github/workflows/ci.yml](.github/workflows/ci.yml) runs the checks above on every push to `main` and every pull request. [.github/workflows/release.yml](.github/workflows/release.yml) builds an Android APK on EAS and attaches it to a GitHub Release when a `v*` tag is pushed; a manual run only uploads the APK as a workflow artifact. The release job needs an `EXPO_TOKEN` repository secret (expo.dev → Access Tokens) for an Expo account that can build this project.
+[.github/workflows/ci.yml](.github/workflows/ci.yml) runs the checks above on every push to `main` and every pull request. [.github/workflows/release.yml](.github/workflows/release.yml) generates the native Android project with `expo prebuild`, builds the APK with Gradle and attaches it to a GitHub Release when a `v*` tag is pushed; a manual run only uploads the APK as a workflow artifact. No Expo account or token is involved. The APK is signed with the debug keystore that ships with the Expo template, so it installs on devices but cannot be uploaded to the Play Store.
+
+The same APK can be built locally with `bunx expo prebuild --platform android --no-install`, `cd android`, then `./gradlew assembleRelease` (`gradlew.bat assembleRelease` on Windows); it lands in `android/app/build/outputs/apk/release/`.
 
 ## Where behavior lives
 
